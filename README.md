@@ -32,7 +32,7 @@ Built as a portfolio project demonstrating conditional graph routing, graded ret
 | **Chunking** | `RecursiveCharacterTextSplitter` (chunk size 1000, overlap 200) |
 | **Web search fallback** | Tavily `TavilySearch` (max 3 results) |
 | **Structured output** | Pydantic v2 via `with_structured_output()` |
-| **State** | `TypedDict` (`AgentState`) |
+| **State** | `TypedDict` (`AgentState`) — LangGraph state with `question`, `documents`, `generation`, `web_search_needed` |
 | **UI** | Streamlit with per-node execution trace |
 
 ---
