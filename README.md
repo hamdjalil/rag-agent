@@ -1,8 +1,20 @@
 # RAG Agent with Web Search Fallback
 
+**Live demo:** [rag-agent-leddrvanwpwyy2nv6efqxd.streamlit.app](https://rag-agent-leddrvanwpwyy2nv6efqxd.streamlit.app/)
+
 A LangGraph-based retrieval-augmented generation agent that retrieves from a local vector store and falls back to web search when the corpus doesn't cover the question.
 
 Built as a portfolio project demonstrating conditional graph routing, graded retrieval, and production-relevant design decisions.
+
+---
+
+## Screenshots
+
+**RAG path** — query answered directly from the vector store:
+![RAG path](assets/rag.png)
+
+**Web search fallback** — query routed to Tavily when the corpus isn't relevant:
+![Web search fallback](assets/web.png)
 
 ---
 
