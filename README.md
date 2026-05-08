@@ -8,7 +8,7 @@ Built as a portfolio project demonstrating conditional graph routing, graded ret
 
 ---
 
-## Screenshots
+## UI Preview
 
 **RAG path** — query answered directly from the vector store:
 ![RAG path](assets/rag.png)
