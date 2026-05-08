@@ -68,14 +68,72 @@ python ingest.py path/to/your.pdf
 """)
 
 # --- Main app ---
-st.title("RAG Agent with Web Search Fallback")
-st.caption("Retrieves from a local vector store, falls back to Tavily web search if docs aren't relevant.")
+st.title("RAG Agent")
+st.caption("Retrieves from a local vector store · falls back to Tavily web search if docs aren't relevant.")
 
 if "graph" not in st.session_state:
     with st.spinner("Compiling graph..."):
         st.session_state.graph = build_graph()
 
-question = st.text_input("Ask a question:", placeholder="What is multi-head attention?")
+SUGGESTIONS = [
+    "What is multi-head attention?",
+    "How does positional encoding work?",
+    "How does attention differ from CNNs?",
+]
+
+# Apply a pending suggestion from a bubble click before the widget renders
+if st.session_state.get("_pending_question"):
+    st.session_state.question_input = st.session_state.pop("_pending_question")
+
+if "question_input" not in st.session_state:
+    st.session_state.question_input = ""
+
+st.markdown("""
+<style>
+/* Column gap so bubbles don't bleed into each other */
+div[data-testid="stHorizontalBlock"] {
+    gap: 10px !important;
+}
+/* Suggestion bubble buttons */
+div[data-testid="stHorizontalBlock"] [data-testid^="stBaseButton"],
+div[data-testid="stHorizontalBlock"] .stButton > button {
+    border-radius: 999px !important;
+    border: 1px solid rgba(250, 75, 75, 0.45) !important;
+    background: transparent !important;
+    font-size: 0.8rem !important;
+    padding: 6px 16px !important;
+    white-space: normal !important;
+    height: auto !important;
+    line-height: 1.4 !important;
+    transition: background 0.15s, border-color 0.15s !important;
+}
+div[data-testid="stHorizontalBlock"] [data-testid^="stBaseButton"]:hover,
+div[data-testid="stHorizontalBlock"] .stButton > button:hover {
+    background: rgba(250, 75, 75, 0.08) !important;
+    border-color: #ff4b4b !important;
+}
+div[data-testid="stHorizontalBlock"] [data-testid^="stBaseButton"]:active,
+div[data-testid="stHorizontalBlock"] .stButton > button:active {
+    background: rgba(250, 75, 75, 0.18) !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+question = st.text_input(
+    label="Ask a question",
+    placeholder="What is multi-head attention?",
+    key="question_input",
+)
+
+# Suggestion bubbles — clicking populates the input and immediately runs the graph
+cols = st.columns(len(SUGGESTIONS))
+for col, suggestion in zip(cols, SUGGESTIONS):
+    with col:
+        if st.button(suggestion, use_container_width=True):
+            st.session_state._pending_question = suggestion
+            st.rerun()
+
+question = st.session_state.question_input
 
 if question:
     with st.spinner("Running graph..."):
