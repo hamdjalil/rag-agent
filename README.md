@@ -18,6 +18,25 @@ Built as a portfolio project demonstrating conditional graph routing, graded ret
 
 ---
 
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| **Orchestration** | LangGraph `StateGraph` with conditional routing |
+| **Observability** | LangSmith |
+| **LLM — grading** | Groq `llama-3.3-70b-versatile` (reliable tool calling for structured output) |
+| **LLM — generation** | Groq `llama-3.1-8b-instant` (fast, low latency) |
+| **Embeddings** | HuggingFace `all-MiniLM-L6-v2` via sentence-transformers (local, no API cost) |
+| **Vector store** | Chroma (persisted locally at `./chroma_db`, retrieves `k=4`) |
+| **Document loading** | LangChain `PyPDFLoader` |
+| **Chunking** | `RecursiveCharacterTextSplitter` (chunk size 1000, overlap 200) |
+| **Web search fallback** | Tavily `TavilySearch` (max 3 results) |
+| **Structured output** | Pydantic v2 via `with_structured_output()` |
+| **State** | `TypedDict` (`AgentState`) |
+| **UI** | Streamlit with per-node execution trace |
+
+---
+
 ## Architecture
 
 ```
