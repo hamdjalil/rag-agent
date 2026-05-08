@@ -23,7 +23,7 @@ Built as a portfolio project demonstrating conditional graph routing, graded ret
 | Layer | Technology |
 |---|---|
 | **Orchestration** | LangGraph `StateGraph` with conditional routing |
-| **Observability** | LangSmith |
+| **Observability** | LangSmith (traces every node — latency, token usage, inputs/outputs) |
 | **LLM — grading** | Groq `llama-3.3-70b-versatile` (reliable tool calling for structured output) |
 | **LLM — generation** | Groq `llama-3.1-8b-instant` (fast, low latency) |
 | **Embeddings** | HuggingFace `all-MiniLM-L6-v2` via sentence-transformers (local, no API cost) |
@@ -75,7 +75,7 @@ The graph is compiled from `graph.py` and the ASCII diagram above is generated l
 
 ## Setup
 
-**Requirements:** Python 3.10+, a [Groq API key](https://console.groq.com) (free), a [Tavily API key](https://app.tavily.com) (free).
+**Requirements:** Python 3.10+, a [Groq API key](https://console.groq.com) (free), a [Tavily API key](https://app.tavily.com) (free), optionally a [LangSmith API key](https://smith.langchain.com) (free) for tracing.
 
 ```bash
 # 1. Clone and enter the project
@@ -91,7 +91,8 @@ pip install -r requirements.txt
 
 # 4. Set up environment variables
 cp .env.example .env
-# Edit .env and fill in GROQ_API_KEY and TAVILY_API_KEY
+# Edit .env — required: GROQ_API_KEY, TAVILY_API_KEY
+# Optional: LANGCHAIN_TRACING_V2=true + LANGCHAIN_API_KEY for LangSmith tracing
 
 # 5. Build the vector store (one-time)
 python ingest.py
@@ -155,6 +156,10 @@ Chroma runs locally with zero infrastructure — no Docker, no cloud account, no
 ### Why local embeddings (sentence-transformers)?
 
 `all-MiniLM-L6-v2` runs on CPU, costs nothing per query, and has no network dependency in the retrieval path. This matters: with cloud embeddings, every query hits an external API twice (once to embed the query, once during ingest per chunk). Local embeddings remove that latency and cost. The tradeoff is a slightly weaker embedding model — in practice, MiniLM is strong enough for most document retrieval tasks and the difference rarely shows up before you've tuned chunking and retrieval parameters anyway.
+
+### Why LangSmith for observability?
+
+LangSmith traces every node automatically — no instrumentation code needed beyond setting `LANGCHAIN_TRACING_V2=true`. Each trace shows the full execution path, per-node latency, token counts, and the exact inputs and outputs at every step. For a graded RAG system this is essential: when the grader routes incorrectly (grades a relevant doc as irrelevant, or vice versa) you can see exactly what the model received and why it decided wrong. That feedback loop is how you improve the system beyond guesswork.
 
 ### Why two models for grading vs. generation?
 
