@@ -1,0 +1,25 @@
+# Environment
+.env
+.env.local
+
+# Virtual environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Vector store — committed so deployment works without re-ingesting
+# Uncomment to exclude if the index gets large
+# chroma_db/
+
+# PDFs are large — commit only the sample or exclude all
+# docs/*.pdf  # uncomment to exclude PDFs from git
+
+# IDE
+.vscode/
+.idea/
+*.DS_Store
+
+# LangSmith local cache
+.langsmith/
