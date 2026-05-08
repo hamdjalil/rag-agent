@@ -5,7 +5,69 @@ load_dotenv()
 
 from graph import build_graph
 
-st.set_page_config(page_title="RAG Agent", page_icon="🔍", layout="centered")
+st.set_page_config(
+    page_title="RAG Agent",
+    page_icon="🔍",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
+
+# --- Sidebar tutorial (auto-opens on first visit; user can collapse anytime) ---
+with st.sidebar:
+    st.header("Tutorial")
+    st.markdown("Welcome! Here's what this agent does and how to use it.")
+
+    st.subheader("How it works")
+    st.markdown("""
+1. **Retrieve** — searches a local [Chroma](https://www.trychroma.com/) vector store
+   for the 4 most semantically similar chunks to your question.
+
+2. **Grade** — an LLM judges whether the retrieved chunks are actually relevant.
+   If not, it routes to web search to avoid a hallucinated answer.
+
+3. **Web search (fallback)** — if local docs weren't relevant,
+   [Tavily](https://tavily.com/) fetches live web results and appends them to the context.
+
+4. **Generate** — a second LLM produces a grounded answer from whichever
+   documents ended up in context.
+""")
+
+    st.divider()
+
+    st.subheader("What's in the vector store")
+    st.markdown("""
+The store is indexed from **"Attention Is All You Need"** (Vaswani et al., 2017) —
+the original Transformer paper.
+
+Try asking:
+""")
+    example_questions = [
+        "What is multi-head attention?",
+        "How does positional encoding work?",
+        "What are the encoder and decoder stacks made of?",
+        "Why did the authors replace recurrence with attention?",
+    ]
+    for q in example_questions:
+        st.markdown(f"- *{q}*")
+
+    st.info(
+        "For questions outside the paper's scope, the agent automatically "
+        "falls back to a live Tavily web search.",
+        icon="ℹ️",
+    )
+
+    st.divider()
+
+    st.subheader("Add your own documents")
+    st.markdown("""
+Run this once to index a custom PDF:
+
+```bash
+python ingest.py path/to/your.pdf
+```
+""")
+
+# --- Main app ---
 st.title("RAG Agent with Web Search Fallback")
 st.caption("Retrieves from a local vector store, falls back to Tavily web search if docs aren't relevant.")
 
